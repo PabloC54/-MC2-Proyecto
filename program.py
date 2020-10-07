@@ -1,7 +1,6 @@
 import turtle
 import random
 import math
-from turtle import shape
 
 Letra = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
          "N", "Ñ", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
@@ -29,15 +28,15 @@ Letra = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
 # <~~ GENERACIÓN DE VÉRTICES ~~>
 try:
     Num_vertices = int(input(
-        "\n>> Ingrese el número de vértices deseados. No se recomiendan más de 30 vértices.\n"))
+        "\n>> Ingrese el número de vértices deseados. No se recomiendan más de 30 vértices\n"))
 
     if Num_vertices <= 2:
         Num_vertices = 3
-        print("Se necesitan un mínimo de 3 vértices. Se dibujarán 3 vértices.")
+        print("Se necesitan un mínimo de 3 vértices. Se dibujarán 3 vértices")
 
 except:
     Num_vertices = 3
-    print("Número ingresado no válido. Se dibujarán 3 vértices.")
+    print("Número ingresado no válido. Se dibujarán 3 vértices")
 
 try:
     Grado_vertices = int(input(
@@ -45,15 +44,19 @@ try:
 
     if Grado_vertices >= (Num_vertices):
         Grado_vertices = 2
-        print("Se excedió el número máximo. Los vértices serán de grado 2.")
+        print("Se excedió el número máximo. Los vértices serán de grado 2")
 
-    elif Grado_vertices < 2 or Grado_vertices % 2 == 1:
-        Grado_vertices = 2
-        print("Se debe tener un número par. Los vértices serán de grado 2.")
+    elif Grado_vertices < 2:
+        Grado_vertices=2
+        print("Se necesitan al menos un grafo 2-Regular. Los vértices serán de grado 2")
+
+    elif Grado_vertices % 2 == 1:
+        Grado_vertices -= 1
+        print("Se debe tener un número par. Los vértices serán de grado "+str(Grado_vertices))
 
 except:
     Grado_vertices = 2
-    print("Número ingresado no válido. Los vértices serán de grado 2.")
+    print("Número ingresado no válido. Los vértices serán de grado 2")
 
 
 # VENTANA CANVAS
@@ -125,48 +128,65 @@ for Vertice in Vertices:
 
 
 # CALCULANDO LAS ARISTAS
-Aristas = []
-for Vertice in Vertices:
+Aristas_creadas=False
 
-    Grado_vertice = Vertice[3]
+while Aristas_creadas==False:
 
-    for _ in range(Grado_vertices-Grado_vertice):
+    try:
+        Aristas = []
+        for Vertice in Vertices:
 
-        Arista_valida = False
-        while Arista_valida == False:
+            Grado_vertice = Vertice[3]
 
-            Vertice_temp = Vertices[random.randint(0, len(Vertices)-1)]
+            for _ in range(Grado_vertices-Grado_vertice):
 
-            Arista_temp = [[Vertice, Vertice_temp],
-                           [Vertice_temp, Vertice]]
-            Arista_alt = [[Vertice_temp, Vertice],
-                          [Vertice, Vertice_temp]]
+                Arista_valida = False
+                acc=0
 
-            if Vertice_temp[3] < Grado_vertices and Vertice != Vertice_temp:
+                while Arista_valida == False:
 
-                if (Arista_temp not in Aristas) and (Arista_alt not in Aristas):
+                    if acc==150:
+                        print("=================================\nDemasiados intentos. Reintentando\n=================================")
+                        err+=1
 
-                    Vertice[3] += 1
-                    Vertice_temp[3] += 1
+                    Vertice_temp = Vertices[random.randint(0, len(Vertices)-1)]
 
-                    Aristas.append(Arista_temp)
-                    print("SE METIÓ ", Arista_temp)
-                    Arista_valida = True
+                    Arista_temp = [[Vertice, Vertice_temp],
+                                [Vertice_temp, Vertice]]
+                    Arista_alt = [[Vertice_temp, Vertice],
+                                [Vertice, Vertice_temp]]
 
-            # SI HUBIERA LAZOS
-            elif Vertice_temp[3] < (Grado_vertices-1) and Vertice == Vertice_temp:
+                    if Vertice_temp[3] < Grado_vertices and Vertice != Vertice_temp:
 
-                if (Arista_temp not in Aristas) and (Arista_alt not in Aristas):
+                        if (Arista_temp not in Aristas) and (Arista_alt not in Aristas):
 
-                    Vertice[3] += 2
-                    Aristas.append(Arista_temp)
-                    print("LAZO  ", Arista_temp)
-                    Arista_valida = True
+                            Vertice[3] += 1
+                            Vertice_temp[3] += 1
 
-            else:
-                print(Vertice, Vertice[3], Vertice_temp,
-                      Vertice_temp[3], Vertice != Vertice_temp)
-                print("=========================\n", Vertices)
+                            Aristas.append(Arista_temp)
+                            Arista_valida = True
+
+                    # SI HUBIERA LAZOS
+                    # elif Vertice_temp[3] < (Grado_vertices-1) and Vertice == Vertice_temp:
+
+                    #     if (Arista_temp not in Aristas) and (Arista_alt not in Aristas):
+
+                    #         Vertice[3] += 2
+                    #         Aristas.append(Arista_temp)
+                    #         print("LAZO  ", Arista_temp)
+                    #         Arista_valida = True
+
+                    else:
+                        acc+=1
+                        print("[/] No se pudo meter ",Arista_temp)
+                        print("Vertices:",Vertices)
+
+        Aristas_creadas=True
+        
+    except: pass
+
+print("~~~~~~~~> VERTICES <~~~~~~~~~")
+print(Vertices)
 
 # DIBUJANDO LAS ARISTAS
 t_aristas = turtle.Turtle()
@@ -262,5 +282,5 @@ while Juego_terminado == False:
 
             Juego_terminado=True
 
-print("Haz click en la ventana de juego para cerrarlo.")
+print("Haz click en la ventana de juego para cerrarlo")
 ventana.exitonclick()
